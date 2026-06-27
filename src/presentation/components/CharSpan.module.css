@@ -1,0 +1,24 @@
+.pending {
+  color: var(--color-text-muted);
+}
+
+.correct {
+  color: var(--color-correct);
+}
+
+.incorrect {
+  color: var(--color-incorrect);
+  text-decoration: underline;
+  text-decoration-color: var(--color-incorrect);
+}
+
+.cursor {
+  color: var(--color-text-primary);
+  border-bottom: 2px solid var(--color-cursor);
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { border-bottom-color: var(--color-cursor); }
+  50% { border-bottom-color: transparent; }
+}

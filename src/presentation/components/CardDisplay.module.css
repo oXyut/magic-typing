@@ -1,0 +1,56 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--color-gold);
+  text-align: center;
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+
+.imgWrapper {
+  position: relative;
+  width: 240px;
+  height: 336px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 0 2px var(--color-border), var(--shadow-panel);
+}
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: opacity 0.3s;
+}
+
+.visible {
+  opacity: 1;
+}
+
+.hidden {
+  opacity: 0;
+  position: absolute;
+  inset: 0;
+}
+
+.skeleton {
+  width: 240px;
+  height: 336px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, var(--color-bg-panel) 25%, var(--color-bg-card) 50%, var(--color-bg-panel) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
