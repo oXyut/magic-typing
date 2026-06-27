@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import styles from './StartScreen.module.css'
-import type { GameConfig, GameMode, Language, Format, RarityValue } from '../../domain/card'
+import type { GameConfig, GameMode, Format, RarityValue } from '../../domain/card'
 
 interface Props {
   defaultConfig: GameConfig
@@ -24,14 +24,14 @@ const RARITIES: { value: RarityValue; label: string; cssVar: string }[] = [
   { value: 'mythic',   label: '神話レア',  cssVar: 'var(--color-mythic)' },
 ]
 
-const DURATIONS = [1, 3, 5, 10] as const
+const DURATIONS = [1, 2, 3] as const
 
 export function StartScreen({ defaultConfig, onStart }: Props) {
   const [mode, setMode] = useState<GameMode>(defaultConfig.mode)
-  const [lang, setLang] = useState<Language>(defaultConfig.lang)
   const [format, setFormat] = useState<Format>(defaultConfig.format)
   const [rarities, setRarities] = useState<RarityValue[]>(defaultConfig.rarities)
   const [durationMinutes, setDurationMinutes] = useState(defaultConfig.durationMinutes)
+  const [soundEnabled, setSoundEnabled] = useState(defaultConfig.soundEnabled)
 
   const toggleRarity = (value: RarityValue) => {
     setRarities(prev =>
@@ -40,7 +40,7 @@ export function StartScreen({ defaultConfig, onStart }: Props) {
   }
 
   const handleStart = () => {
-    onStart({ mode, lang, format, rarities, durationMinutes })
+    onStart({ mode, format, rarities, durationMinutes, soundEnabled })
   }
 
   return (
@@ -57,9 +57,7 @@ export function StartScreen({ defaultConfig, onStart }: Props) {
 
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>
-              <span className={styles.sectionLine} />
-              タイピング対象
-              <span className={styles.sectionLine} />
+              <span className={styles.sectionLine} />タイピング対象<span className={styles.sectionLine} />
             </h2>
             <div className={styles.toggleGroup}>
               {([
@@ -81,33 +79,7 @@ export function StartScreen({ defaultConfig, onStart }: Props) {
 
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>
-              <span className={styles.sectionLine} />
-              言語
-              <span className={styles.sectionLine} />
-            </h2>
-            <div className={styles.toggleGroup}>
-              {([
-                { value: 'en' as Language, label: '英語 (EN)' },
-                { value: 'ja' as Language, label: '日本語 (JA)' },
-              ] as const).map(({ value, label }) => (
-                <button
-                  key={value}
-                  className={`${styles.btn} ${lang === value ? styles.btnActive : ''}`}
-                  onClick={() => setLang(value)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <div className={styles.divider} />
-
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>
-              <span className={styles.sectionLine} />
-              カードプール
-              <span className={styles.sectionLine} />
+              <span className={styles.sectionLine} />カードプール<span className={styles.sectionLine} />
             </h2>
             <div className={styles.formatGrid}>
               {FORMATS.map(({ value, label }) => (
@@ -126,9 +98,7 @@ export function StartScreen({ defaultConfig, onStart }: Props) {
 
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>
-              <span className={styles.sectionLine} />
-              レア度
-              <span className={styles.sectionLine} />
+              <span className={styles.sectionLine} />レア度<span className={styles.sectionLine} />
             </h2>
             <div className={styles.rarityGroup}>
               <button
@@ -161,9 +131,7 @@ export function StartScreen({ defaultConfig, onStart }: Props) {
 
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>
-              <span className={styles.sectionLine} />
-              制限時間
-              <span className={styles.sectionLine} />
+              <span className={styles.sectionLine} />制限時間<span className={styles.sectionLine} />
             </h2>
             <div className={styles.toggleGroup}>
               {DURATIONS.map((d) => (
@@ -175,6 +143,28 @@ export function StartScreen({ defaultConfig, onStart }: Props) {
                   {d}分
                 </button>
               ))}
+            </div>
+          </section>
+
+          <div className={styles.divider} />
+
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>
+              <span className={styles.sectionLine} />サウンド<span className={styles.sectionLine} />
+            </h2>
+            <div className={styles.toggleGroup}>
+              <button
+                className={`${styles.btn} ${soundEnabled ? styles.btnActive : ''}`}
+                onClick={() => setSoundEnabled(true)}
+              >
+                ON
+              </button>
+              <button
+                className={`${styles.btn} ${!soundEnabled ? styles.btnActive : ''}`}
+                onClick={() => setSoundEnabled(false)}
+              >
+                OFF
+              </button>
             </div>
           </section>
 

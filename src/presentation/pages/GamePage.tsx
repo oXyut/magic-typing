@@ -8,26 +8,27 @@ import { StatsBar } from '../components/StatsBar'
 import { useCardFetcher } from '../hooks/useCardFetcher'
 import { useTyping } from '../hooks/useTyping'
 import { useStats } from '../hooks/useStats'
+import { playCardComplete } from '../../infrastructure/sounds'
 import type { GameConfig, FinalStats } from '../../domain/card'
 
 type GameState = 'idle' | 'playing' | 'finished'
 
 const FORMAT_LABELS: Record<string, string> = {
-  all: 'すべて',
-  standard: 'スタンダード',
-  pioneer: 'パイオニア',
-  modern: 'モダン',
-  legacy: 'レガシー',
-  vintage: 'ヴィンテージ',
-  pauper: 'パウパー',
+  all: 'ALL',
+  standard: 'STD',
+  pioneer: 'PIO',
+  modern: 'MOD',
+  legacy: 'LEG',
+  vintage: 'VIN',
+  pauper: 'PAU',
 }
 
 const DEFAULT_CONFIG: GameConfig = {
   mode: 'name',
-  lang: 'en',
   format: 'all',
   rarities: [],
   durationMinutes: 3,
+  soundEnabled: true,
 }
 
 export function GamePage() {
@@ -40,11 +41,11 @@ export function GamePage() {
   const totalSeconds = config.durationMinutes * 60
 
   const { currentCard, isLoading, error, advance } = useCardFetcher(
-    config.mode, config.lang, config.format, config.rarities,
+    config.mode, config.format, config.rarities,
   )
   const target = currentCard?.typingTarget ?? ''
-  const { typed, charStates, isComplete, inputRef, handleCompositionEnd, handleInput, reset: resetTyping } =
-    useTyping(target, isPlaying, config.lang)
+  const { typed, charStates, isComplete, reset: resetTyping } =
+    useTyping(target, isPlaying, config.soundEnabled)
 
   const { remainingSeconds, isTimeUp, wpm, accuracy, completedCards, recordCardCompleted, reset: resetStats } =
     useStats(isPlaying, totalSeconds)
@@ -61,12 +62,13 @@ export function GamePage() {
     if (!isPlaying || !isComplete) return
     const correctChars = charStates.filter((c) => c.state === 'correct').length
     recordCardCompleted(target.length, correctChars)
+    if (config.soundEnabled) playCardComplete()
     const timer = setTimeout(() => {
       advance()
       resetTyping()
-    }, 400)
+    }, 500)
     return () => clearTimeout(timer)
-  }, [isComplete, isPlaying, charStates, target.length, recordCardCompleted, advance, resetTyping])
+  }, [isComplete, isPlaying, charStates, target.length, recordCardCompleted, advance, resetTyping, config.soundEnabled])
 
   const handleStart = useCallback((cfg: GameConfig) => {
     finishedRef.current = false
@@ -114,9 +116,9 @@ export function GamePage() {
         <header className={styles.topBar}>
           <span className={styles.topTitle}>MTG Typing</span>
           <div className={styles.topTags}>
-            <span className={styles.tag}>{config.mode === 'name' ? 'カード名' : 'テキスト'}</span>
-            <span className={styles.tag}>{config.lang === 'en' ? 'EN' : 'JA'}</span>
+            <span className={styles.tag}>{config.mode === 'name' ? 'Card Name' : 'Card Text'}</span>
             <span className={styles.tag}>{FORMAT_LABELS[config.format]}</span>
+            {config.soundEnabled && <span className={styles.tag}>♪</span>}
           </div>
         </header>
 
@@ -146,17 +148,14 @@ export function GamePage() {
               <>
                 <TypingArea
                   charStates={charStates}
-                  inputRef={inputRef}
-                  handleCompositionEnd={handleCompositionEnd}
-                  handleInput={handleInput}
                   isComplete={isComplete}
                 />
                 <div className={styles.bottomRow}>
                   <p className={styles.hint}>
-                    {isLoading ? 'カードを読み込み中...' : `${typed.length} / ${target.length} 文字`}
+                    {isLoading ? 'Loading card...' : `${typed.length} / ${target.length}`}
                   </p>
                   <button className={styles.skipBtn} onClick={handleSkip}>
-                    スキップ →
+                    Skip →
                   </button>
                 </div>
               </>

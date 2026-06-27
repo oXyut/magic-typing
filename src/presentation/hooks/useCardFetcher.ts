@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import type { Card, GameMode, Language, Format, RarityValue } from '../../domain/card'
+import type { Card, GameMode, Format, RarityValue } from '../../domain/card'
 import { fetchRandomCard } from '../../infrastructure/scryfallApi'
 
 interface UseCardFetcherResult {
@@ -11,7 +11,6 @@ interface UseCardFetcherResult {
 
 export function useCardFetcher(
   mode: GameMode,
-  lang: Language,
   format: Format,
   rarities: RarityValue[],
 ): UseCardFetcherResult {
@@ -25,21 +24,21 @@ export function useCardFetcher(
     if (isFetchingNext.current) return
     isFetchingNext.current = true
     try {
-      const card = await fetchRandomCard(mode, lang, format, rarities)
+      const card = await fetchRandomCard(mode, format, rarities)
       nextCardRef.current = card
     } catch {
       // silent preload failure
     } finally {
       isFetchingNext.current = false
     }
-  }, [mode, lang, format, rarities])
+  }, [mode, format, rarities])
 
   useEffect(() => {
     setIsLoading(true)
     setError(null)
     nextCardRef.current = null
 
-    fetchRandomCard(mode, lang, format, rarities)
+    fetchRandomCard(mode, format, rarities)
       .then((card) => {
         setCurrentCard(card)
         setIsLoading(false)
@@ -49,7 +48,7 @@ export function useCardFetcher(
         setError(err instanceof Error ? err.message : 'Unknown error')
         setIsLoading(false)
       })
-  }, [mode, lang, format, rarities, fetchNext])
+  }, [mode, format, rarities, fetchNext])
 
   const advance = useCallback(() => {
     if (nextCardRef.current) {
@@ -58,7 +57,7 @@ export function useCardFetcher(
       fetchNext()
     } else {
       setIsLoading(true)
-      fetchRandomCard(mode, lang, format, rarities)
+      fetchRandomCard(mode, format, rarities)
         .then((card) => {
           setCurrentCard(card)
           setIsLoading(false)
@@ -69,7 +68,7 @@ export function useCardFetcher(
           setIsLoading(false)
         })
     }
-  }, [mode, lang, format, rarities, fetchNext])
+  }, [mode, format, rarities, fetchNext])
 
   return { currentCard, isLoading, error, advance }
 }

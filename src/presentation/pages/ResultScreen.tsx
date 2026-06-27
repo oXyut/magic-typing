@@ -51,9 +51,7 @@ export function ResultScreen({ stats, config, onRestart, onRetry }: Props) {
         </div>
 
         <div className={styles.gradeBlock}>
-          <span className={styles.grade} style={{ color }}>
-            {grade}
-          </span>
+          <span className={styles.grade} style={{ color }}>{grade}</span>
         </div>
 
         <div className={styles.statsGrid}>
@@ -75,8 +73,6 @@ export function ResultScreen({ stats, config, onRestart, onRetry }: Props) {
           <span>{config.durationMinutes}分</span>
           <span className={styles.dot}>◆</span>
           <span>{config.mode === 'name' ? 'カード名' : 'テキスト'}</span>
-          <span className={styles.dot}>◆</span>
-          <span>{config.lang === 'en' ? '英語' : '日本語'}</span>
           <span className={styles.dot}>◆</span>
           <span>{FORMAT_LABELS[config.format]}</span>
           <span className={styles.dot}>◆</span>

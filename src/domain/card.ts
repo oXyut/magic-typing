@@ -1,16 +1,15 @@
 import type { ScryfallCard } from '../types/scryfall'
 
 export type GameMode = 'name' | 'text'
-export type Language = 'en' | 'ja'
 export type Format = 'all' | 'standard' | 'pioneer' | 'modern' | 'legacy' | 'vintage' | 'pauper'
 export type RarityValue = 'common' | 'uncommon' | 'rare' | 'mythic'
 
 export interface GameConfig {
   mode: GameMode
-  lang: Language
   format: Format
-  rarities: RarityValue[]   // 空配列 = すべてのレア度
+  rarities: RarityValue[]
   durationMinutes: number
+  soundEnabled: boolean
 }
 
 export interface FinalStats {
@@ -26,11 +25,7 @@ export interface Card {
   imageUrl: string
 }
 
-export function normalizeCard(
-  raw: ScryfallCard,
-  mode: GameMode,
-  lang: Language,
-): Card | null {
+export function normalizeCard(raw: ScryfallCard, mode: GameMode): Card | null {
   const isDfc = Array.isArray(raw.card_faces) && raw.card_faces.length >= 2
 
   let imageUrl: string
@@ -39,37 +34,25 @@ export function normalizeCard(
 
   if (isDfc) {
     const faces = raw.card_faces!
-    const face0 = faces[0]
-    const face1 = faces[1]
-
-    imageUrl = face0.image_uris?.normal ?? ''
+    imageUrl = faces[0].image_uris?.normal ?? ''
 
     if (mode === 'name') {
-      const name0 = lang === 'ja' ? (face0.printed_name ?? face0.name) : face0.name
-      const name1 = lang === 'ja' ? (face1.printed_name ?? face1.name) : face1.name
-      displayName = `${name0} // ${name1}`
+      displayName = `${faces[0].name} // ${faces[1].name}`
       typingTarget = displayName
     } else {
-      const text0 = lang === 'ja'
-        ? (face0.printed_text ?? face0.oracle_text ?? '')
-        : (face0.oracle_text ?? '')
-      const text1 = lang === 'ja'
-        ? (face1.printed_text ?? face1.oracle_text ?? '')
-        : (face1.oracle_text ?? '')
-      typingTarget = [text0, text1].filter(Boolean).join(' / ')
-      displayName = lang === 'ja' ? (raw.printed_name ?? raw.name) : raw.name
+      typingTarget = [faces[0].oracle_text ?? '', faces[1].oracle_text ?? '']
+        .filter(Boolean).join(' / ')
+      displayName = raw.name
     }
   } else {
     imageUrl = raw.image_uris?.normal ?? ''
 
     if (mode === 'name') {
-      displayName = lang === 'ja' ? (raw.printed_name ?? raw.name) : raw.name
+      displayName = raw.name
       typingTarget = displayName
     } else {
-      typingTarget = lang === 'ja'
-        ? (raw.printed_text ?? raw.oracle_text ?? '')
-        : (raw.oracle_text ?? '')
-      displayName = lang === 'ja' ? (raw.printed_name ?? raw.name) : raw.name
+      typingTarget = raw.oracle_text ?? ''
+      displayName = raw.name
     }
   }
 
