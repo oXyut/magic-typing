@@ -39,20 +39,16 @@ export function GamePage() {
   const totalSeconds = config.durationMinutes * 60
 
   const { currentCard, isLoading, error, advance } = useCardFetcher(
-    config.mode, config.lang, config.format
+    config.mode, config.lang, config.format,
   )
   const target = currentCard?.typingTarget ?? ''
-  const {
-    typed, charStates, isComplete, inputRef,
-    handleChange, handleCompositionStart, handleCompositionEnd, reset: resetTyping,
-  } = useTyping(target, isPlaying)
+  const { typed, charStates, isComplete, inputRef, handleCompositionEnd, reset: resetTyping } =
+    useTyping(target, isPlaying)
 
-  const {
-    remainingSeconds, isTimeUp, wpm, accuracy, completedCards,
-    recordKeystroke, recordCardCompleted, reset: resetStats,
-  } = useStats(isPlaying, totalSeconds)
+  const { remainingSeconds, isTimeUp, wpm, accuracy, completedCards, recordCardCompleted, reset: resetStats } =
+    useStats(isPlaying, totalSeconds)
 
-  // ゲーム終了
+  // 時間切れ → 終了
   useEffect(() => {
     if (isTimeUp && !finishedRef.current) {
       finishedRef.current = true
@@ -64,33 +60,14 @@ export function GamePage() {
   // カード完了 → 次へ
   useEffect(() => {
     if (!isPlaying || !isComplete) return
-    recordCardCompleted(target.length)
+    const correctChars = charStates.filter((c) => c.state === 'correct').length
+    recordCardCompleted(target.length, correctChars)
     const timer = setTimeout(() => {
       advance()
       resetTyping()
     }, 400)
     return () => clearTimeout(timer)
-  }, [isComplete, isPlaying, target.length, recordCardCompleted, advance, resetTyping])
-
-  // カードロード後にフォーカス
-  useEffect(() => {
-    if (isPlaying && !isLoading) {
-      setTimeout(() => inputRef.current?.focus(), 50)
-    }
-  }, [isPlaying, isLoading, currentCard, inputRef])
-
-  // キーストロークとuseTypingのhandleChangeを合成
-  const prevTypedLenRef = useRef(0)
-  prevTypedLenRef.current = typed.length
-
-  const handleChangeWithStats = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVal = e.target.value
-    if (newVal.length > prevTypedLenRef.current) {
-      const pos = newVal.length - 1
-      recordKeystroke(newVal[pos] === target[pos])
-    }
-    handleChange(e)
-  }, [handleChange, target, recordKeystroke])
+  }, [isComplete, isPlaying, charStates, target.length, recordCardCompleted, advance, resetTyping])
 
   const handleStart = useCallback((cfg: GameConfig) => {
     finishedRef.current = false
@@ -168,16 +145,13 @@ export function GamePage() {
               <>
                 <TypingArea
                   charStates={charStates}
-                  typed={typed}
                   inputRef={inputRef}
-                  handleChange={handleChangeWithStats}
-                  handleCompositionStart={handleCompositionStart}
                   handleCompositionEnd={handleCompositionEnd}
                   isComplete={isComplete}
                 />
                 <div className={styles.bottomRow}>
                   <p className={styles.hint}>
-                    {isLoading ? 'カードを読み込み中...' : 'クリックまたはキーを押してタイプ開始'}
+                    {isLoading ? 'カードを読み込み中...' : `${typed.length} / ${target.length} 文字`}
                   </p>
                   <button className={styles.skipBtn} onClick={handleSkip}>
                     スキップ →

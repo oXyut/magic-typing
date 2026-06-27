@@ -6,16 +6,14 @@ interface UseStatsResult {
   wpm: number
   accuracy: number
   completedCards: number
-  recordKeystroke: (isCorrect: boolean) => void
-  recordCardCompleted: (charCount: number) => void
+  recordCardCompleted: (charCount: number, correctChars: number) => void
   reset: () => void
 }
 
 export function useStats(active: boolean, totalSeconds: number): UseStatsResult {
   const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds)
-  const [totalKeystrokes, setTotalKeystrokes] = useState(0)
-  const [correctKeystrokes, setCorrectKeystrokes] = useState(0)
   const [completedChars, setCompletedChars] = useState(0)
+  const [completedCorrectChars, setCompletedCorrectChars] = useState(0)
   const [completedCards, setCompletedCards] = useState(0)
 
   useEffect(() => {
@@ -43,27 +41,22 @@ export function useStats(active: boolean, totalSeconds: number): UseStatsResult 
   const wpm = elapsedMinutes > 0
     ? Math.round((completedChars / 5) / elapsedMinutes)
     : 0
-  const accuracy = totalKeystrokes > 0
-    ? Math.round((correctKeystrokes / totalKeystrokes) * 100)
+  const accuracy = completedChars > 0
+    ? Math.round((completedCorrectChars / completedChars) * 100)
     : 100
 
-  const recordKeystroke = useCallback((isCorrect: boolean) => {
-    setTotalKeystrokes((n) => n + 1)
-    if (isCorrect) setCorrectKeystrokes((n) => n + 1)
-  }, [])
-
-  const recordCardCompleted = useCallback((charCount: number) => {
+  const recordCardCompleted = useCallback((charCount: number, correctChars: number) => {
     setCompletedChars((n) => n + charCount)
+    setCompletedCorrectChars((n) => n + correctChars)
     setCompletedCards((n) => n + 1)
   }, [])
 
   const reset = useCallback(() => {
     setRemainingSeconds(totalSeconds)
-    setTotalKeystrokes(0)
-    setCorrectKeystrokes(0)
     setCompletedChars(0)
+    setCompletedCorrectChars(0)
     setCompletedCards(0)
   }, [totalSeconds])
 
-  return { remainingSeconds, isTimeUp, wpm, accuracy, completedCards, recordKeystroke, recordCardCompleted, reset }
+  return { remainingSeconds, isTimeUp, wpm, accuracy, completedCards, recordCardCompleted, reset }
 }

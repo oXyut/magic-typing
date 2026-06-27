@@ -12,28 +12,42 @@ interface UseTypingResult {
   charStates: CharEntry[]
   isComplete: boolean
   inputRef: RefObject<HTMLInputElement | null>
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  handleCompositionStart: () => void
   handleCompositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void
   reset: () => void
 }
 
 export function useTyping(target: string, enabled: boolean): UseTypingResult {
   const [typed, setTyped] = useState('')
-  const isComposing = useRef(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  // グローバルキーダウンでinputへフォーカスを戻す
+  // 英語: window keydown で直接 typed を更新（フォーカス不要）
   useEffect(() => {
     if (!enabled) return
-    const refocus = (e: KeyboardEvent) => {
-      if (e.key === 'Tab' || e.key === 'F5' || e.metaKey || e.ctrlKey) return
-      if (document.activeElement !== inputRef.current) {
-        inputRef.current?.focus()
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // IME変換中はcompositionEndに任せる
+      if (e.isComposing) return
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+
+      if (e.key === 'Backspace') {
+        e.preventDefault()
+        setTyped((prev) => prev.slice(0, -1))
+        return
+      }
+      if (e.key.length === 1) {
+        setTyped((prev) => prev + e.key)
       }
     }
-    window.addEventListener('keydown', refocus)
-    return () => window.removeEventListener('keydown', refocus)
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [enabled])
+
+  // 日本語: inputへのフォーカス確保
+  useEffect(() => {
+    if (!enabled) return
+    const timer = setTimeout(() => inputRef.current?.focus(), 100)
+    return () => clearTimeout(timer)
   }, [enabled])
 
   const charStates = useMemo<CharEntry[]>(() =>
@@ -47,38 +61,20 @@ export function useTyping(target: string, enabled: boolean): UseTypingResult {
 
   const isComplete = typed.length > 0 && typed === target
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (isComposing.current) return
-    setTyped(e.target.value)
-  }, [])
-
-  const handleCompositionStart = useCallback(() => {
-    isComposing.current = true
-  }, [])
-
+  // 日本語IME: 確定時にtypedへ追記、inputをクリア
   const handleCompositionEnd = useCallback((e: React.CompositionEvent<HTMLInputElement>) => {
-    isComposing.current = false
-    setTyped(e.currentTarget.value)
+    const committed = e.currentTarget.value
+    if (committed) {
+      setTyped((prev) => prev + committed)
+      e.currentTarget.value = ''
+    }
   }, [])
 
   const reset = useCallback(() => {
     setTyped('')
-    isComposing.current = false
-    // inputのDOM値もリセット
-    if (inputRef.current) {
-      inputRef.current.value = ''
-    }
+    if (inputRef.current) inputRef.current.value = ''
     setTimeout(() => inputRef.current?.focus(), 0)
   }, [])
 
-  return {
-    typed,
-    charStates,
-    isComplete,
-    inputRef,
-    handleChange,
-    handleCompositionStart,
-    handleCompositionEnd,
-    reset,
-  }
+  return { typed, charStates, isComplete, inputRef, handleCompositionEnd, reset }
 }
