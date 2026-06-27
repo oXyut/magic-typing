@@ -85,9 +85,10 @@ export function useTyping(target: string, enabled: boolean, lang: Language): Use
     }
   }, [])
 
-  // JA モード: 句読点など IME を通さない直接入力を処理
-  // compositionEnd 直後の input イベント（insertFromComposition）は除外
+  // JA モード専用: 句読点など IME を通さない直接入力を処理
+  // EN モードは window.keydown が担うためここでは何もしない
   const handleInput = useCallback((e: React.FormEvent<HTMLInputElement>) => {
+    if (lang !== 'ja') return
     const ie = e.nativeEvent as InputEvent
     if (ie.isComposing) return
     if (ie.inputType === 'insertFromComposition') return
@@ -96,7 +97,7 @@ export function useTyping(target: string, enabled: boolean, lang: Language): Use
       setTyped((prev) => prev + data)
       e.currentTarget.value = ''
     }
-  }, [])
+  }, [lang])
 
   const reset = useCallback(() => {
     setTyped('')
