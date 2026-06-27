@@ -1,0 +1,110 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-base);
+  padding: 2rem 1rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--color-gold);
+  text-shadow: 0 0 20px rgba(201, 167, 78, 0.3);
+}
+
+.statsGrid {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.statCard {
+  flex: 1;
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: var(--shadow-panel);
+}
+
+.statValue {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-gold-bright);
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.configSummary {
+  display: flex;
+  gap: 0.6rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.retryBtn {
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--color-gold);
+  border: none;
+  border-radius: 8px;
+  color: #0a0a0f;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.retryBtn:hover {
+  background: var(--color-gold-bright);
+}
+
+.restartBtn {
+  width: 100%;
+  padding: 0.9rem;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.restartBtn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}

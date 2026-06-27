@@ -22,16 +22,21 @@
   opacity: 0.4;
 }
 
+/* フルカバー透明input — pointer-eventsはwrapperのonClickで代替 */
 .hiddenInput {
   position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   opacity: 0;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  pointer-events: none;
+  cursor: default;
   border: none;
   outline: none;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font-size: 16px;
+  padding: 0;
 }
 
 .completeMsg {

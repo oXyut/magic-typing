@@ -41,10 +41,11 @@ export function TypingArea({
         autoCorrect="off"
         autoCapitalize="off"
         spellCheck={false}
+        autoFocus
         aria-label="typing input"
       />
       {isComplete && (
-        <div className={styles.completeMsg}>完了！次のカードを読み込み中...</div>
+        <div className={styles.completeMsg}>完了！次のカードへ...</div>
       )}
     </div>
   )

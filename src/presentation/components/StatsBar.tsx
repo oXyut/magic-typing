@@ -3,13 +3,16 @@ import styles from './StatsBar.module.css'
 interface Props {
   wpm: number
   accuracy: number
-  elapsedSeconds: number
+  remainingSeconds: number
+  totalSeconds: number
 }
 
-export function StatsBar({ wpm, accuracy, elapsedSeconds }: Props) {
-  const minutes = Math.floor(elapsedSeconds / 60)
-  const seconds = elapsedSeconds % 60
+export function StatsBar({ wpm, accuracy, remainingSeconds, totalSeconds }: Props) {
+  const minutes = Math.floor(remainingSeconds / 60)
+  const seconds = remainingSeconds % 60
   const timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+  const pct = totalSeconds > 0 ? remainingSeconds / totalSeconds : 1
+  const urgent = remainingSeconds <= 10 && remainingSeconds > 0
 
   return (
     <div className={styles.bar}>
@@ -23,9 +26,12 @@ export function StatsBar({ wpm, accuracy, elapsedSeconds }: Props) {
         <span className={styles.label}>正確率</span>
       </div>
       <div className={styles.divider} />
-      <div className={styles.stat}>
+      <div className={`${styles.stat} ${urgent ? styles.urgent : ''}`}>
         <span className={styles.value}>{timeStr}</span>
-        <span className={styles.label}>経過時間</span>
+        <span className={styles.label}>残り時間</span>
+        <div className={styles.timerTrack}>
+          <div className={styles.timerFill} style={{ width: `${pct * 100}%` }} />
+        </div>
       </div>
     </div>
   )

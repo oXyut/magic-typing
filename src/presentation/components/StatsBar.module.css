@@ -2,7 +2,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0;
   background: var(--color-bg-panel);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-panel);
@@ -14,6 +13,7 @@
   flex-direction: column;
   align-items: center;
   padding: 0 2rem;
+  position: relative;
 }
 
 .value {
@@ -35,4 +35,32 @@
   width: 1px;
   height: 2.5rem;
   background: var(--color-border);
+}
+
+.urgent .value {
+  color: var(--color-incorrect);
+  animation: pulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 1; }
+  to   { opacity: 0.5; }
+}
+
+.timerTrack {
+  position: absolute;
+  bottom: -0.75rem;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.timerFill {
+  height: 100%;
+  background: var(--color-gold);
+  border-radius: 2px;
+  transition: width 1s linear;
 }

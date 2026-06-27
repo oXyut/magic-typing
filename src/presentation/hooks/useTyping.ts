@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback, RefObject } from 'react'
+import { useState, useMemo, useRef, useCallback, RefObject, useEffect } from 'react'
 
 export type CharState = 'pending' | 'correct' | 'incorrect' | 'cursor'
 
@@ -18,10 +18,23 @@ interface UseTypingResult {
   reset: () => void
 }
 
-export function useTyping(target: string): UseTypingResult {
+export function useTyping(target: string, enabled: boolean): UseTypingResult {
   const [typed, setTyped] = useState('')
   const isComposing = useRef(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
+
+  // グローバルキーダウンでinputへフォーカスを戻す
+  useEffect(() => {
+    if (!enabled) return
+    const refocus = (e: KeyboardEvent) => {
+      if (e.key === 'Tab' || e.key === 'F5' || e.metaKey || e.ctrlKey) return
+      if (document.activeElement !== inputRef.current) {
+        inputRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', refocus)
+    return () => window.removeEventListener('keydown', refocus)
+  }, [enabled])
 
   const charStates = useMemo<CharEntry[]>(() =>
     target.split('').map((char, i) => {
@@ -51,6 +64,10 @@ export function useTyping(target: string): UseTypingResult {
   const reset = useCallback(() => {
     setTyped('')
     isComposing.current = false
+    // inputのDOM値もリセット
+    if (inputRef.current) {
+      inputRef.current.value = ''
+    }
     setTimeout(() => inputRef.current?.focus(), 0)
   }, [])
 
