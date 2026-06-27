@@ -7,10 +7,11 @@ interface Props {
   charStates: CharEntry[]
   inputRef: React.RefObject<HTMLInputElement | null>
   handleCompositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void
+  handleInput: (e: React.FormEvent<HTMLInputElement>) => void
   isComplete: boolean
 }
 
-export function TypingArea({ charStates, inputRef, handleCompositionEnd, isComplete }: Props) {
+export function TypingArea({ charStates, inputRef, handleCompositionEnd, handleInput, isComplete }: Props) {
   return (
     <div className={styles.wrapper} onClick={() => inputRef.current?.focus()}>
       <div className={`${styles.text} ${isComplete ? styles.complete : ''}`}>
@@ -18,19 +19,18 @@ export function TypingArea({ charStates, inputRef, handleCompositionEnd, isCompl
           <CharSpan key={i} char={entry.char} state={entry.state} />
         ))}
       </div>
-      {/* 日本語IME用 — 非表示だがフォーカス可能 */}
       <input
         ref={inputRef as React.RefObject<HTMLInputElement>}
         type="text"
         className={styles.hiddenInput}
         onCompositionEnd={handleCompositionEnd}
+        onInput={handleInput}
         autoComplete="off"
         autoCorrect="off"
         autoCapitalize="off"
         spellCheck={false}
         autoFocus
         aria-label="typing input"
-        readOnly={false}
       />
       {isComplete && (
         <div className={styles.completeMsg}>完了！次のカードへ...</div>

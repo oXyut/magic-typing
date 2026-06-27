@@ -42,7 +42,7 @@ export function GamePage() {
     config.mode, config.lang, config.format,
   )
   const target = currentCard?.typingTarget ?? ''
-  const { typed, charStates, isComplete, inputRef, handleCompositionEnd, reset: resetTyping } =
+  const { typed, charStates, isComplete, inputRef, handleCompositionEnd, handleInput, reset: resetTyping } =
     useTyping(target, isPlaying, config.lang)
 
   const { remainingSeconds, isTimeUp, wpm, accuracy, completedCards, recordCardCompleted, reset: resetStats } =
@@ -147,6 +147,7 @@ export function GamePage() {
                   charStates={charStates}
                   inputRef={inputRef}
                   handleCompositionEnd={handleCompositionEnd}
+                  handleInput={handleInput}
                   isComplete={isComplete}
                 />
                 <div className={styles.bottomRow}>
