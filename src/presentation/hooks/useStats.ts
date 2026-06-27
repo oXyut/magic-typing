@@ -10,7 +10,12 @@ interface UseStatsResult {
   reset: () => void
 }
 
-export function useStats(active: boolean, totalSeconds: number): UseStatsResult {
+export function useStats(
+  active: boolean,
+  totalSeconds: number,
+  inProgressTotal: number = 0,
+  inProgressErrors: number = 0,
+): UseStatsResult {
   const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds)
   const [completedChars, setCompletedChars] = useState(0)
   const [completedCorrectChars, setCompletedCorrectChars] = useState(0)
@@ -38,11 +43,13 @@ export function useStats(active: boolean, totalSeconds: number): UseStatsResult 
 
   const elapsedSeconds = totalSeconds - remainingSeconds
   const elapsedMinutes = elapsedSeconds / 60
+  const totalChars = completedChars + inProgressTotal
+  const totalCorrect = completedCorrectChars + (inProgressTotal - inProgressErrors)
   const wpm = elapsedMinutes > 0
-    ? Math.round((completedChars / 5) / elapsedMinutes)
+    ? Math.round((totalChars / 5) / elapsedMinutes)
     : 0
-  const accuracy = completedChars > 0
-    ? Math.round((completedCorrectChars / completedChars) * 100)
+  const accuracy = totalChars > 0
+    ? Math.round((totalCorrect / totalChars) * 100)
     : 100
 
   const recordCardCompleted = useCallback((charCount: number, correctChars: number) => {

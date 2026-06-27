@@ -12,9 +12,15 @@ interface UseTypingResult {
   typed: string
   charStates: CharEntry[]
   isComplete: boolean
+  inProgress: InProgressStats
   reset: () => void
   /** カード完了時に呼び出して累計キーストローク数と誤打数を取得する */
   getKeystrokeStats: () => { total: number; errors: number }
+}
+
+export interface InProgressStats {
+  total: number
+  errors: number
 }
 
 export function useTyping(
@@ -23,6 +29,7 @@ export function useTyping(
   soundEnabled: boolean,
 ): UseTypingResult {
   const [typed, setTyped] = useState('')
+  const [inProgress, setInProgress] = useState<InProgressStats>({ total: 0, errors: 0 })
   const totalKsRef = useRef(0)   // 全キーストローク数（誤打含む）
   const errorKsRef = useRef(0)   // 誤打数
 
@@ -48,6 +55,7 @@ export function useTyping(
           const isCorrect = target[prev.length] === char
           totalKsRef.current++
           if (!isCorrect) errorKsRef.current++
+          setInProgress({ total: totalKsRef.current, errors: errorKsRef.current })
           if (soundEnabled) {
             if (isCorrect) playCorrect()
             else playIncorrect()
@@ -81,7 +89,8 @@ export function useTyping(
     setTyped('')
     totalKsRef.current = 0
     errorKsRef.current = 0
+    setInProgress({ total: 0, errors: 0 })
   }, [])
 
-  return { typed, charStates, isComplete, reset, getKeystrokeStats }
+  return { typed, charStates, isComplete, inProgress, reset, getKeystrokeStats }
 }

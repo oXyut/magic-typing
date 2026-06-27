@@ -45,11 +45,11 @@ export function GamePage() {
     config.mode, config.format, config.rarities, config.deckPool,
   )
   const target = currentCard?.typingTarget ?? ''
-  const { typed, charStates, isComplete, reset: resetTyping, getKeystrokeStats } =
+  const { typed, charStates, isComplete, inProgress, reset: resetTyping, getKeystrokeStats } =
     useTyping(target, isPlaying, config.soundEnabled)
 
   const { remainingSeconds, isTimeUp, wpm, accuracy, completedCards, recordCardCompleted, reset: resetStats } =
-    useStats(isPlaying, totalSeconds)
+    useStats(isPlaying, totalSeconds, inProgress.total, inProgress.errors)
 
   useEffect(() => {
     if (isTimeUp && !finishedRef.current) {
