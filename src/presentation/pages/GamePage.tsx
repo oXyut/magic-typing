@@ -26,6 +26,7 @@ const DEFAULT_CONFIG: GameConfig = {
   mode: 'name',
   lang: 'en',
   format: 'all',
+  rarity: 'all',
   durationMinutes: 3,
 }
 
@@ -39,7 +40,7 @@ export function GamePage() {
   const totalSeconds = config.durationMinutes * 60
 
   const { currentCard, isLoading, error, advance } = useCardFetcher(
-    config.mode, config.lang, config.format,
+    config.mode, config.lang, config.format, config.rarity,
   )
   const target = currentCard?.typingTarget ?? ''
   const { typed, charStates, isComplete, inputRef, handleCompositionEnd, handleInput, reset: resetTyping } =

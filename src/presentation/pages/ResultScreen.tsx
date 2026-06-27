@@ -18,6 +18,14 @@ const FORMAT_LABELS: Record<string, string> = {
   pauper: 'パウパー',
 }
 
+const RARITY_LABELS: Record<string, string> = {
+  all: 'すべてのレア度',
+  common: 'コモン',
+  uncommon: 'アンコモン',
+  rare: 'レア',
+  mythic: '神話レア',
+}
+
 export function ResultScreen({ stats, config, onRestart, onRetry }: Props) {
   const { wpm, accuracy, completedCards } = stats
 
@@ -49,6 +57,8 @@ export function ResultScreen({ stats, config, onRestart, onRetry }: Props) {
           <span>{config.lang === 'en' ? '英語' : '日本語'}</span>
           <span>·</span>
           <span>{FORMAT_LABELS[config.format]}</span>
+          <span>·</span>
+          <span>{RARITY_LABELS[config.rarity]}</span>
         </div>
 
         <div className={styles.buttons}>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import styles from './StartScreen.module.css'
-import type { GameConfig, GameMode, Language, Format } from '../../domain/card'
+import type { GameConfig, GameMode, Language, Format, Rarity } from '../../domain/card'
 
 interface Props {
   defaultConfig: GameConfig
@@ -17,16 +17,25 @@ const FORMATS: { value: Format; label: string }[] = [
   { value: 'pauper', label: 'パウパー' },
 ]
 
+const RARITIES: { value: Rarity; label: string; color: string }[] = [
+  { value: 'all',      label: 'すべて',    color: 'var(--color-text-muted)' },
+  { value: 'common',   label: 'コモン',    color: '#c0c0c0' },
+  { value: 'uncommon', label: 'アンコモン', color: '#8ab4d4' },
+  { value: 'rare',     label: 'レア',      color: '#c9a74e' },
+  { value: 'mythic',   label: '神話レア',  color: '#e87c3e' },
+]
+
 const DURATIONS = [1, 3, 5, 10] as const
 
 export function StartScreen({ defaultConfig, onStart }: Props) {
   const [mode, setMode] = useState<GameMode>(defaultConfig.mode)
   const [lang, setLang] = useState<Language>(defaultConfig.lang)
   const [format, setFormat] = useState<Format>(defaultConfig.format)
+  const [rarity, setRarity] = useState<Rarity>(defaultConfig.rarity)
   const [durationMinutes, setDurationMinutes] = useState(defaultConfig.durationMinutes)
 
   const handleStart = () => {
-    onStart({ mode, lang, format, durationMinutes })
+    onStart({ mode, lang, format, rarity, durationMinutes })
   }
 
   return (
@@ -82,6 +91,23 @@ export function StartScreen({ defaultConfig, onStart }: Props) {
                   key={value}
                   className={`${styles.formatBtn} ${format === value ? styles.active : ''}`}
                   onClick={() => setFormat(value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>レア度</h2>
+            <div className={styles.toggleGroup}>
+              {RARITIES.map(({ value, label, color }) => (
+                <button
+                  key={value}
+                  className={`${styles.toggleBtn} ${rarity === value ? styles.active : ''}`}
+                  style={rarity === value ? {} : { '--rarity-color': color } as React.CSSProperties}
+                  onClick={() => setRarity(value)}
+                  data-rarity={value}
                 >
                   {label}
                 </button>

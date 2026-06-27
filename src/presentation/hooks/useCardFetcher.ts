@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import type { Card, GameMode, Language, Format } from '../../domain/card'
+import type { Card, GameMode, Language, Format, Rarity } from '../../domain/card'
 import { fetchRandomCard } from '../../infrastructure/scryfallApi'
 
 interface UseCardFetcherResult {
@@ -9,7 +9,7 @@ interface UseCardFetcherResult {
   advance: () => void
 }
 
-export function useCardFetcher(mode: GameMode, lang: Language, format: Format): UseCardFetcherResult {
+export function useCardFetcher(mode: GameMode, lang: Language, format: Format, rarity: Rarity): UseCardFetcherResult {
   const [currentCard, setCurrentCard] = useState<Card | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -20,21 +20,21 @@ export function useCardFetcher(mode: GameMode, lang: Language, format: Format): 
     if (isFetchingNext.current) return
     isFetchingNext.current = true
     try {
-      const card = await fetchRandomCard(mode, lang, format)
+      const card = await fetchRandomCard(mode, lang, format, rarity)
       nextCardRef.current = card
     } catch {
       // silent preload failure
     } finally {
       isFetchingNext.current = false
     }
-  }, [mode, lang, format])
+  }, [mode, lang, format, rarity])
 
   useEffect(() => {
     setIsLoading(true)
     setError(null)
     nextCardRef.current = null
 
-    fetchRandomCard(mode, lang, format)
+    fetchRandomCard(mode, lang, format, rarity)
       .then((card) => {
         setCurrentCard(card)
         setIsLoading(false)
@@ -44,7 +44,7 @@ export function useCardFetcher(mode: GameMode, lang: Language, format: Format): 
         setError(err instanceof Error ? err.message : 'Unknown error')
         setIsLoading(false)
       })
-  }, [mode, lang, format, fetchNext])
+  }, [mode, lang, format, rarity, fetchNext])
 
   const advance = useCallback(() => {
     if (nextCardRef.current) {
@@ -53,7 +53,7 @@ export function useCardFetcher(mode: GameMode, lang: Language, format: Format): 
       fetchNext()
     } else {
       setIsLoading(true)
-      fetchRandomCard(mode, lang, format)
+      fetchRandomCard(mode, lang, format, rarity)
         .then((card) => {
           setCurrentCard(card)
           setIsLoading(false)
@@ -64,7 +64,7 @@ export function useCardFetcher(mode: GameMode, lang: Language, format: Format): 
           setIsLoading(false)
         })
     }
-  }, [mode, lang, format, fetchNext])
+  }, [mode, lang, format, rarity, fetchNext])
 
   return { currentCard, isLoading, error, advance }
 }

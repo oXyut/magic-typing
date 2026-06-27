@@ -80,6 +80,12 @@
   color: var(--color-text-primary);
 }
 
+/* レア度ボタン: 非選択時にレア度カラーで着色 */
+[data-rarity]:not(.active) {
+  color: var(--rarity-color, var(--color-text-muted));
+  border-color: color-mix(in srgb, var(--rarity-color, var(--color-border)) 40%, transparent);
+}
+
 .active {
   background: var(--color-gold) !important;
   border-color: var(--color-gold) !important;

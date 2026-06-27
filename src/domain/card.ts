@@ -3,11 +3,13 @@ import type { ScryfallCard } from '../types/scryfall'
 export type GameMode = 'name' | 'text'
 export type Language = 'en' | 'ja'
 export type Format = 'all' | 'standard' | 'pioneer' | 'modern' | 'legacy' | 'vintage' | 'pauper'
+export type Rarity = 'all' | 'common' | 'uncommon' | 'rare' | 'mythic'
 
 export interface GameConfig {
   mode: GameMode
   lang: Language
   format: Format
+  rarity: Rarity
   durationMinutes: number
 }
 
