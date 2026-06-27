@@ -63,7 +63,7 @@ export function normalizeCard(raw: ScryfallCard, mode: GameMode): Card | null {
   return {
     id: raw.id,
     displayName,
-    typingTarget: typingTarget.trim(),
+    typingTarget: typingTarget.trim().replace(/-/g, ''),
     imageUrl,
   }
 }
