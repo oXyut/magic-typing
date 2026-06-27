@@ -39,17 +39,20 @@ export function useTyping(
         return
       }
 
-      if (e.key.length === 1) {
+      // Enter キーは改行文字として扱う（カードテキストの \n に対応）
+      const char = e.key === 'Enter' ? '\n' : e.key
+
+      if (char.length === 1) {
         setTyped((prev) => {
           if (prev === target) return prev  // 完了後はロック
-          const isCorrect = target[prev.length] === e.key
+          const isCorrect = target[prev.length] === char
           totalKsRef.current++
           if (!isCorrect) errorKsRef.current++
           if (soundEnabled) {
             if (isCorrect) playCorrect()
             else playIncorrect()
           }
-          return prev + e.key
+          return prev + char
         })
       }
     }
