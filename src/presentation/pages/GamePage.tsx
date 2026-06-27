@@ -45,7 +45,7 @@ export function GamePage() {
     config.mode, config.format, config.rarities, config.deckPool,
   )
   const target = currentCard?.typingTarget ?? ''
-  const { typed, charStates, isComplete, reset: resetTyping } =
+  const { typed, charStates, isComplete, reset: resetTyping, getKeystrokeStats } =
     useTyping(target, isPlaying, config.soundEnabled)
 
   const { remainingSeconds, isTimeUp, wpm, accuracy, completedCards, recordCardCompleted, reset: resetStats } =
@@ -61,15 +61,16 @@ export function GamePage() {
 
   useEffect(() => {
     if (!isPlaying || !isComplete) return
-    const correctChars = charStates.filter((c) => c.state === 'correct').length
-    recordCardCompleted(target.length, correctChars)
+    const { total, errors } = getKeystrokeStats()
+    // total = 全キーストローク、(total - errors) = 正しく打てたキー
+    recordCardCompleted(total > 0 ? total : target.length, total > 0 ? total - errors : target.length)
     if (config.soundEnabled) playCardComplete()
     const timer = setTimeout(() => {
       advance()
       resetTyping()
     }, 500)
     return () => clearTimeout(timer)
-  }, [isComplete, isPlaying, charStates, target.length, recordCardCompleted, advance, resetTyping, config.soundEnabled])
+  }, [isComplete, isPlaying, target.length, getKeystrokeStats, recordCardCompleted, advance, resetTyping, config.soundEnabled])
 
   const handleStart = useCallback((cfg: GameConfig) => {
     finishedRef.current = false

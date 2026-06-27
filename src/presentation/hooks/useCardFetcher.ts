@@ -9,11 +9,13 @@ interface UseCardFetcherResult {
   advance: () => void
 }
 
-function pickRandom<T>(arr: T[], excludeIdx: number): { item: T; idx: number } {
-  if (arr.length === 1) return { item: arr[0], idx: 0 }
-  let idx: number
-  do { idx = Math.floor(Math.random() * arr.length) } while (idx === excludeIdx)
-  return { item: arr[idx], idx }
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
 }
 
 export function useCardFetcher(
@@ -27,7 +29,23 @@ export function useCardFetcher(
   const [error, setError] = useState<string | null>(null)
   const nextCardRef = useRef<Card | null>(null)
   const isFetchingNext = useRef(false)
-  const lastPoolIdxRef = useRef<number>(-1)
+
+  // デッキモード用: シャッフル済みキュー（末尾から pop する）
+  const deckQueueRef = useRef<Card[]>([])
+  const prevDeckPoolRef = useRef<Card[] | undefined>(undefined)
+
+  const nextFromDeck = useCallback((pool: Card[]): Card => {
+    // プールが変わったらキューをリセット
+    if (pool !== prevDeckPoolRef.current) {
+      prevDeckPoolRef.current = pool
+      deckQueueRef.current = []
+    }
+    // キューが空になったら再シャッフルして補充
+    if (deckQueueRef.current.length === 0) {
+      deckQueueRef.current = shuffle(pool)
+    }
+    return deckQueueRef.current.pop()!
+  }, [])
 
   const isDeckMode = deckPool && deckPool.length > 0
 
@@ -49,9 +67,7 @@ export function useCardFetcher(
     setError(null)
 
     if (isDeckMode) {
-      const { item, idx } = pickRandom(deckPool, lastPoolIdxRef.current)
-      lastPoolIdxRef.current = idx
-      setCurrentCard(item)
+      setCurrentCard(nextFromDeck(deckPool))
       setIsLoading(false)
       return
     }
@@ -74,9 +90,7 @@ export function useCardFetcher(
 
   const advance = useCallback(() => {
     if (isDeckMode) {
-      const { item, idx } = pickRandom(deckPool, lastPoolIdxRef.current)
-      lastPoolIdxRef.current = idx
-      setCurrentCard(item)
+      setCurrentCard(nextFromDeck(deckPool))
       return
     }
 
@@ -97,7 +111,7 @@ export function useCardFetcher(
           setIsLoading(false)
         })
     }
-  }, [mode, format, rarities, deckPool, isDeckMode, fetchNext])
+  }, [mode, format, rarities, deckPool, isDeckMode, nextFromDeck, fetchNext])
 
   return { currentCard, isLoading, error, advance }
 }
