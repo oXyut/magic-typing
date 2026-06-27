@@ -60,6 +60,11 @@
   letter-spacing: 0.06em;
 }
 
+.tagDeck {
+  color: var(--color-gold);
+  border-color: rgba(201, 167, 78, 0.4);
+}
+
 /* ── メインレイアウト ── */
 
 .main {

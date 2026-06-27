@@ -9,33 +9,54 @@ interface UseCardFetcherResult {
   advance: () => void
 }
 
+function pickRandom<T>(arr: T[], excludeIdx: number): { item: T; idx: number } {
+  if (arr.length === 1) return { item: arr[0], idx: 0 }
+  let idx: number
+  do { idx = Math.floor(Math.random() * arr.length) } while (idx === excludeIdx)
+  return { item: arr[idx], idx }
+}
+
 export function useCardFetcher(
   mode: GameMode,
   format: Format,
   rarities: RarityValue[],
+  deckPool?: Card[],
 ): UseCardFetcherResult {
   const [currentCard, setCurrentCard] = useState<Card | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const nextCardRef = useRef<Card | null>(null)
   const isFetchingNext = useRef(false)
+  const lastPoolIdxRef = useRef<number>(-1)
+
+  const isDeckMode = deckPool && deckPool.length > 0
 
   const fetchNext = useCallback(async () => {
+    if (isDeckMode) return
     if (isFetchingNext.current) return
     isFetchingNext.current = true
     try {
       const card = await fetchRandomCard(mode, format, rarities)
       nextCardRef.current = card
     } catch {
-      // silent preload failure
+      // silent
     } finally {
       isFetchingNext.current = false
     }
-  }, [mode, format, rarities])
+  }, [mode, format, rarities, isDeckMode])
 
   useEffect(() => {
-    setIsLoading(true)
     setError(null)
+
+    if (isDeckMode) {
+      const { item, idx } = pickRandom(deckPool, lastPoolIdxRef.current)
+      lastPoolIdxRef.current = idx
+      setCurrentCard(item)
+      setIsLoading(false)
+      return
+    }
+
+    setIsLoading(true)
     nextCardRef.current = null
 
     fetchRandomCard(mode, format, rarities)
@@ -48,9 +69,17 @@ export function useCardFetcher(
         setError(err instanceof Error ? err.message : 'Unknown error')
         setIsLoading(false)
       })
-  }, [mode, format, rarities, fetchNext])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, format, rarities, deckPool, fetchNext])
 
   const advance = useCallback(() => {
+    if (isDeckMode) {
+      const { item, idx } = pickRandom(deckPool, lastPoolIdxRef.current)
+      lastPoolIdxRef.current = idx
+      setCurrentCard(item)
+      return
+    }
+
     if (nextCardRef.current) {
       setCurrentCard(nextCardRef.current)
       nextCardRef.current = null
@@ -68,7 +97,7 @@ export function useCardFetcher(
           setIsLoading(false)
         })
     }
-  }, [mode, format, rarities, fetchNext])
+  }, [mode, format, rarities, deckPool, isDeckMode, fetchNext])
 
   return { currentCard, isLoading, error, advance }
 }

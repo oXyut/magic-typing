@@ -74,9 +74,15 @@ export function ResultScreen({ stats, config, onRestart, onRetry }: Props) {
           <span className={styles.dot}>◆</span>
           <span>{config.mode === 'name' ? 'カード名' : 'テキスト'}</span>
           <span className={styles.dot}>◆</span>
-          <span>{FORMAT_LABELS[config.format]}</span>
-          <span className={styles.dot}>◆</span>
-          <span>{getRarityLabel(config.rarities)}</span>
+          {config.deckPool && config.deckPool.length > 0 ? (
+            <span>マイデッキ ({config.deckPool.length} 枚)</span>
+          ) : (
+            <>
+              <span>{FORMAT_LABELS[config.format]}</span>
+              <span className={styles.dot}>◆</span>
+              <span>{getRarityLabel(config.rarities)}</span>
+            </>
+          )}
         </div>
 
         <div className={styles.buttons}>

@@ -39,9 +39,10 @@ export function GamePage() {
 
   const isPlaying = gameState === 'playing'
   const totalSeconds = config.durationMinutes * 60
+  const isDeckMode = !!config.deckPool && config.deckPool.length > 0
 
   const { currentCard, isLoading, error, advance } = useCardFetcher(
-    config.mode, config.format, config.rarities,
+    config.mode, config.format, config.rarities, config.deckPool,
   )
   const target = currentCard?.typingTarget ?? ''
   const { typed, charStates, isComplete, reset: resetTyping } =
@@ -78,9 +79,7 @@ export function GamePage() {
     setGameState('playing')
   }, [resetStats, resetTyping])
 
-  const handleRestart = useCallback(() => {
-    setGameState('idle')
-  }, [])
+  const handleRestart = useCallback(() => setGameState('idle'), [])
 
   const handleRetry = useCallback(() => {
     finishedRef.current = false
@@ -116,8 +115,16 @@ export function GamePage() {
         <header className={styles.topBar}>
           <span className={styles.topTitle}>MTG Typing</span>
           <div className={styles.topTags}>
-            <span className={styles.tag}>{config.mode === 'name' ? 'Card Name' : 'Card Text'}</span>
-            <span className={styles.tag}>{FORMAT_LABELS[config.format]}</span>
+            <span className={styles.tag}>
+              {config.mode === 'name' ? 'Card Name' : 'Card Text'}
+            </span>
+            {isDeckMode ? (
+              <span className={`${styles.tag} ${styles.tagDeck}`}>
+                DECK · {config.deckPool!.length} cards
+              </span>
+            ) : (
+              <span className={styles.tag}>{FORMAT_LABELS[config.format]}</span>
+            )}
             {config.soundEnabled && <span className={styles.tag}>♪</span>}
           </div>
         </header>
@@ -146,10 +153,7 @@ export function GamePage() {
               </div>
             ) : (
               <>
-                <TypingArea
-                  charStates={charStates}
-                  isComplete={isComplete}
-                />
+                <TypingArea charStates={charStates} isComplete={isComplete} />
                 <div className={styles.bottomRow}>
                   <p className={styles.hint}>
                     {isLoading ? 'Loading card...' : `${typed.length} / ${target.length}`}

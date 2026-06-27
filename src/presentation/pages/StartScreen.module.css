@@ -17,11 +17,9 @@
   gap: 2rem;
 }
 
-/* ── タイトルブロック ── */
+/* ── タイトル ── */
 
-.titleBlock {
-  text-align: center;
-}
+.titleBlock { text-align: center; }
 
 .titleOrn {
   font-size: 0.6rem;
@@ -36,9 +34,7 @@
   font-size: 2.8rem;
   font-weight: 700;
   color: var(--color-gold);
-  text-shadow:
-    0 0 40px rgba(201, 167, 78, 0.35),
-    0 0 80px rgba(201, 167, 78, 0.12);
+  text-shadow: 0 0 40px rgba(201, 167, 78, 0.35), 0 0 80px rgba(201, 167, 78, 0.12);
   margin-bottom: 0.5rem;
   letter-spacing: 0.04em;
 }
@@ -68,7 +64,6 @@
   overflow: hidden;
 }
 
-/* 内側の薄い枠 */
 .panel::before {
   content: '';
   position: absolute;
@@ -104,8 +99,6 @@
   background: linear-gradient(to right, transparent, rgba(201, 167, 78, 0.2), transparent);
 }
 
-/* ── 区切り線 ── */
-
 .divider {
   height: 1px;
   background: linear-gradient(to right, transparent, rgba(201, 167, 78, 0.12), transparent);
@@ -132,9 +125,14 @@
   letter-spacing: 0.04em;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
   border-color: var(--color-border-hover);
   color: var(--color-text-primary);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .btnActive {
@@ -146,7 +144,15 @@
 
 .btnSm {
   font-size: 0.78rem;
-  padding: 0.45rem 0.6rem;
+  padding: 0.45rem 0.7rem;
+}
+
+.btnLoad {
+  border-color: rgba(201, 167, 78, 0.4) !important;
+  color: var(--color-gold) !important;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 /* ── フォーマットグリッド ── */
@@ -193,16 +199,96 @@
   box-shadow: 0 0 12px color-mix(in srgb, var(--rarity-c) 30%, transparent) !important;
 }
 
-.rarityGem {
-  font-size: 0.6rem;
-  opacity: 0.8;
-}
+.rarityGem { font-size: 0.6rem; opacity: 0.8; }
 
 .rarityHint {
   font-size: 0.72rem;
   color: var(--color-text-muted);
   font-family: var(--font-mono);
-  letter-spacing: 0.03em;
+}
+
+/* ── デッキセクション ── */
+
+.deckHelpText {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  line-height: 1.6;
+}
+
+.deckTextarea {
+  width: 100%;
+  height: 160px;
+  background: var(--color-bg-card);
+  border: 1px solid rgba(201, 167, 78, 0.18);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  padding: 0.7rem 0.85rem;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.deckTextarea:focus {
+  border-color: rgba(201, 167, 78, 0.4);
+}
+
+.deckTextarea::placeholder {
+  color: var(--color-text-dim);
+}
+
+.deckActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* スピナー */
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(201, 167, 78, 0.25);
+  border-top-color: var(--color-gold);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.deckResult {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.deckResultOk {
+  font-size: 0.8rem;
+  color: var(--color-correct);
+  font-family: var(--font-mono);
+}
+
+.deckResultWarn {
+  font-size: 0.75rem;
+  color: var(--color-gold);
+  font-family: var(--font-mono);
+  line-height: 1.5;
+}
+
+.deckNotFoundList {
+  color: var(--color-text-muted);
+}
+
+.deckResultError {
+  font-size: 0.8rem;
+  color: var(--color-incorrect);
+  font-family: var(--font-mono);
 }
 
 /* ── スタートボタン ── */
@@ -226,11 +312,16 @@
   margin-top: 0.5rem;
 }
 
-.startBtn:hover {
+.startBtn:hover:not(:disabled) {
   background-position: right center;
   box-shadow: 0 0 32px rgba(201, 167, 78, 0.35);
 }
 
-.startBtn:active {
+.startBtn:active:not(:disabled) {
   transform: scale(0.98);
+}
+
+.startBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }

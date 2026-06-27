@@ -50,3 +50,50 @@ export async function fetchRandomCard(
 
   throw new Error('Could not fetch a usable card after retries')
 }
+
+export interface FetchDeckResult {
+  cards: Card[]
+  notFound: string[]
+}
+
+/**
+ * Scryfall /cards/collection エンドポイントで最大 75 枚ずつバッチ取得する。
+ */
+export async function fetchCardsByNames(
+  names: string[],
+  mode: GameMode,
+): Promise<FetchDeckResult> {
+  const BATCH_SIZE = 75
+  const allCards: Card[] = []
+  const allNotFound: string[] = []
+
+  for (let i = 0; i < names.length; i += BATCH_SIZE) {
+    if (i > 0) await new Promise(r => setTimeout(r, 200))
+
+    const batch = names.slice(i, i + BATCH_SIZE)
+    const res = await fetch(`${BASE_URL}/cards/collection`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8',
+        'User-Agent': 'MTGTypingGame/1.0',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ identifiers: batch.map(name => ({ name })) }),
+    })
+
+    if (!res.ok) throw new Error(`Scryfall API error: ${res.status}`)
+
+    const data = await res.json()
+    for (const raw of data.data as ScryfallCard[]) {
+      const card = normalizeCard(raw, mode)
+      if (card) allCards.push(card)
+    }
+    if (Array.isArray(data.not_found)) {
+      for (const nf of data.not_found) {
+        allNotFound.push((nf as { name?: string }).name ?? String(nf))
+      }
+    }
+  }
+
+  return { cards: allCards, notFound: allNotFound }
+}

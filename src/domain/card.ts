@@ -10,6 +10,8 @@ export interface GameConfig {
   rarities: RarityValue[]
   durationMinutes: number
   soundEnabled: boolean
+  /** デッキリストから読み込んだカードプール。セット時はランダム取得を使わない */
+  deckPool?: Card[]
 }
 
 export interface FinalStats {
