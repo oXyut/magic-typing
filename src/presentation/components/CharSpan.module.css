@@ -1,5 +1,5 @@
 .pending {
-  color: #b0b8c8;
+  color: #8890a4;
 }
 
 .correct {
@@ -8,17 +8,21 @@
 
 .incorrect {
   color: var(--color-incorrect);
+  background: rgba(248, 113, 113, 0.1);
+  border-radius: 2px;
   text-decoration: underline;
-  text-decoration-color: var(--color-incorrect);
+  text-decoration-color: rgba(248, 113, 113, 0.5);
+  text-underline-offset: 2px;
 }
 
 .cursor {
   color: var(--color-text-primary);
   border-bottom: 2px solid var(--color-cursor);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
   animation: blink 1s step-end infinite;
 }
 
 @keyframes blink {
   0%, 100% { border-bottom-color: var(--color-cursor); }
-  50% { border-bottom-color: transparent; }
+  50%       { border-bottom-color: transparent; }
 }

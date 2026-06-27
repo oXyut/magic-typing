@@ -3,26 +3,39 @@
   background: var(--color-bg-panel);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-panel);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-panel), inset 0 0 40px rgba(0, 0, 0, 0.4);
+  padding: 1.75rem 1.75rem 1.5rem;
+  box-shadow:
+    var(--shadow-panel),
+    inset 0 2px 20px rgba(0, 0, 0, 0.3);
   cursor: text;
   min-height: 8rem;
+  transition: border-color 0.2s;
+}
+
+/* フォーカス感のある上部ライン */
+.wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201, 167, 78, 0.25), transparent);
 }
 
 .text {
   font-family: var(--font-mono);
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   line-height: 2;
   white-space: pre-wrap;
   word-break: break-all;
-  transition: opacity 0.2s;
+  transition: opacity 0.25s;
 }
 
 .complete {
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
-/* フルカバー透明input — pointer-eventsはwrapperのonClickで代替 */
 .hiddenInput {
   position: absolute;
   inset: 0;
@@ -46,13 +59,14 @@
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   color: var(--color-gold-bright);
-  letter-spacing: 0.05em;
-  animation: fadeIn 0.3s ease;
+  letter-spacing: 0.08em;
+  animation: fadeIn 0.25s ease;
+  text-shadow: 0 0 20px rgba(201, 167, 78, 0.5);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }

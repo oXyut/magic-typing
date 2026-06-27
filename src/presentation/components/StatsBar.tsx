@@ -20,13 +20,11 @@ export function StatsBar({ wpm, accuracy, remainingSeconds, totalSeconds }: Prop
         <span className={styles.value}>{wpm}</span>
         <span className={styles.label}>WPM</span>
       </div>
-      <div className={styles.divider} />
       <div className={styles.stat}>
         <span className={styles.value}>{accuracy}%</span>
         <span className={styles.label}>正確率</span>
       </div>
-      <div className={styles.divider} />
-      <div className={`${styles.stat} ${urgent ? styles.urgent : ''}`}>
+      <div className={`${styles.stat} ${styles.timerStat} ${urgent ? styles.urgent : ''}`}>
         <span className={styles.value}>{timeStr}</span>
         <span className={styles.label}>残り時間</span>
         <div className={styles.timerTrack}>

@@ -1,5 +1,5 @@
 import type { ScryfallCard } from '../types/scryfall'
-import { normalizeCard, type Card, type GameMode, type Language, type Format, type Rarity } from '../domain/card'
+import { normalizeCard, type Card, type GameMode, type Language, type Format, type RarityValue } from '../domain/card'
 
 const BASE_URL = 'https://api.scryfall.com'
 const MIN_INTERVAL_MS = 600
@@ -25,15 +25,20 @@ export async function fetchRandomCard(
   mode: GameMode,
   lang: Language,
   format: Format = 'all',
-  rarity: Rarity = 'all',
+  rarities: RarityValue[] = [],
   retries = 3,
 ): Promise<Card> {
-  const filters: string[] = []
-  if (lang === 'ja') filters.push('lang:ja')
-  if (format !== 'all') filters.push(`format:${format}`)
-  if (rarity !== 'all') filters.push(`rarity:${rarity}`)
+  const parts: string[] = []
+  if (lang === 'ja') parts.push('lang:ja')
+  if (format !== 'all') parts.push(`format:${format}`)
 
-  const query = filters.length > 0 ? `?q=${filters.join('+')}` : ''
+  if (rarities.length === 1) {
+    parts.push(`rarity:${rarities[0]}`)
+  } else if (rarities.length > 1) {
+    parts.push(`(${rarities.map(r => `rarity:${r}`).join('+OR+')})`)
+  }
+
+  const query = parts.length > 0 ? `?q=${parts.join('+')}` : ''
   const url = `${BASE_URL}/cards/random${query}`
 
   for (let attempt = 0; attempt < retries; attempt++) {

@@ -26,7 +26,7 @@ const DEFAULT_CONFIG: GameConfig = {
   mode: 'name',
   lang: 'en',
   format: 'all',
-  rarity: 'all',
+  rarities: [],
   durationMinutes: 3,
 }
 
@@ -40,7 +40,7 @@ export function GamePage() {
   const totalSeconds = config.durationMinutes * 60
 
   const { currentCard, isLoading, error, advance } = useCardFetcher(
-    config.mode, config.lang, config.format, config.rarity,
+    config.mode, config.lang, config.format, config.rarities,
   )
   const target = currentCard?.typingTarget ?? ''
   const { typed, charStates, isComplete, inputRef, handleCompositionEnd, handleInput, reset: resetTyping } =
@@ -49,7 +49,6 @@ export function GamePage() {
   const { remainingSeconds, isTimeUp, wpm, accuracy, completedCards, recordCardCompleted, reset: resetStats } =
     useStats(isPlaying, totalSeconds)
 
-  // 時間切れ → 終了
   useEffect(() => {
     if (isTimeUp && !finishedRef.current) {
       finishedRef.current = true
@@ -58,7 +57,6 @@ export function GamePage() {
     }
   }, [isTimeUp, wpm, accuracy, completedCards])
 
-  // カード完了 → 次へ
   useEffect(() => {
     if (!isPlaying || !isComplete) return
     const correctChars = charStates.filter((c) => c.state === 'correct').length
@@ -113,20 +111,22 @@ export function GamePage() {
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <div className={styles.topBar}>
+        <header className={styles.topBar}>
           <span className={styles.topTitle}>MTG Typing</span>
           <div className={styles.topTags}>
             <span className={styles.tag}>{config.mode === 'name' ? 'カード名' : 'テキスト'}</span>
             <span className={styles.tag}>{config.lang === 'en' ? 'EN' : 'JA'}</span>
             <span className={styles.tag}>{FORMAT_LABELS[config.format]}</span>
           </div>
-        </div>
+        </header>
+
         <StatsBar
           wpm={wpm}
           accuracy={accuracy}
           remainingSeconds={remainingSeconds}
           totalSeconds={totalSeconds}
         />
+
         <main className={styles.main}>
           <aside className={styles.cardSide}>
             <CardDisplay

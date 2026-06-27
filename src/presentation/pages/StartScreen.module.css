@@ -3,8 +3,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-bg-base);
   padding: 2rem 1rem;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(201, 167, 78, 0.07) 0%, transparent 100%),
+    var(--color-bg-base);
 }
 
 .container {
@@ -15,47 +17,101 @@
   gap: 2rem;
 }
 
+/* ── タイトルブロック ── */
+
 .titleBlock {
   text-align: center;
 }
 
+.titleOrn {
+  font-size: 0.6rem;
+  letter-spacing: 0.6em;
+  color: var(--color-gold-dim);
+  margin-bottom: 0.6rem;
+  user-select: none;
+}
+
 .title {
   font-family: var(--font-display);
-  font-size: 2.5rem;
+  font-size: 2.8rem;
+  font-weight: 700;
   color: var(--color-gold);
-  text-shadow: 0 0 30px rgba(201, 167, 78, 0.4);
-  margin-bottom: 0.4rem;
+  text-shadow:
+    0 0 40px rgba(201, 167, 78, 0.35),
+    0 0 80px rgba(201, 167, 78, 0.12);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.04em;
 }
 
 .sub {
   color: var(--color-text-muted);
-  font-size: 0.9rem;
-  letter-spacing: 0.04em;
+  font-family: var(--font-heading);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
 }
 
-.card {
+/* ── パネル ── */
+
+.panel {
   background: var(--color-bg-panel);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
+  border: 1px solid rgba(201, 167, 78, 0.25);
+  border-radius: var(--radius-card);
   padding: 2rem;
-  box-shadow: var(--shadow-panel);
+  box-shadow:
+    var(--shadow-panel),
+    var(--shadow-glow-gold),
+    inset 0 1px 0 rgba(201, 167, 78, 0.08);
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
 }
+
+/* 内側の薄い枠 */
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(201, 167, 78, 0.07);
+  border-radius: calc(var(--radius-card) - 4px);
+  pointer-events: none;
+}
+
+/* ── セクション ── */
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .sectionTitle {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-gold-dim);
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
 }
+
+.sectionLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201, 167, 78, 0.2), transparent);
+}
+
+/* ── 区切り線 ── */
+
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201, 167, 78, 0.12), transparent);
+}
+
+/* ── 汎用ボタン ── */
 
 .toggleGroup {
   display: flex;
@@ -63,35 +119,37 @@
   flex-wrap: wrap;
 }
 
-.toggleBtn {
+.btn {
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(201, 167, 78, 0.2);
   color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  padding: 0.5rem 1.25rem;
-  border-radius: 6px;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
+  letter-spacing: 0.04em;
 }
 
-.toggleBtn:hover {
-  border-color: var(--color-gold);
+.btn:hover {
+  border-color: var(--color-border-hover);
   color: var(--color-text-primary);
 }
 
-/* レア度ボタン: 非選択時にレア度カラーで着色 */
-[data-rarity]:not(.active) {
-  color: var(--rarity-color, var(--color-text-muted));
-  border-color: color-mix(in srgb, var(--rarity-color, var(--color-border)) 40%, transparent);
+.btnActive {
+  background: rgba(201, 167, 78, 0.12) !important;
+  border-color: var(--color-gold) !important;
+  color: var(--color-gold-bright) !important;
+  box-shadow: 0 0 10px rgba(201, 167, 78, 0.15) !important;
 }
 
-.active {
-  background: var(--color-gold) !important;
-  border-color: var(--color-gold) !important;
-  color: #0a0a0f !important;
-  font-weight: bold;
+.btnSm {
+  font-size: 0.78rem;
+  padding: 0.45rem 0.6rem;
 }
+
+/* ── フォーマットグリッド ── */
 
 .formatGrid {
   display: grid;
@@ -99,42 +157,78 @@
   gap: 0.5rem;
 }
 
-.formatBtn {
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  padding: 0.5rem 0.25rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.15s;
-  text-align: center;
+/* ── レア度ボタン ── */
+
+.rarityGroup {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.formatBtn:hover {
-  border-color: var(--color-gold);
-  color: var(--color-text-primary);
+.rarityBtn {
+  background: var(--color-bg-card);
+  border: 1px solid color-mix(in srgb, var(--rarity-c) 25%, transparent);
+  color: color-mix(in srgb, var(--rarity-c) 60%, var(--color-text-muted));
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: border-color 0.15s, color 0.15s, background 0.15s, box-shadow 0.15s;
+  letter-spacing: 0.03em;
 }
+
+.rarityBtn:hover {
+  border-color: color-mix(in srgb, var(--rarity-c) 55%, transparent);
+  color: var(--rarity-c);
+}
+
+.rarityBtnActive {
+  background: color-mix(in srgb, var(--rarity-c) 15%, var(--color-bg-card)) !important;
+  border-color: var(--rarity-c) !important;
+  color: var(--rarity-c) !important;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--rarity-c) 30%, transparent) !important;
+}
+
+.rarityGem {
+  font-size: 0.6rem;
+  opacity: 0.8;
+}
+
+.rarityHint {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: 0.03em;
+}
+
+/* ── スタートボタン ── */
 
 .startBtn {
   width: 100%;
-  padding: 0.9rem;
-  background: var(--color-gold);
-  border: none;
-  border-radius: 8px;
-  color: #0a0a0f;
+  padding: 1rem;
+  background: linear-gradient(135deg, #c9a74e 0%, #a87c2a 50%, #c9a74e 100%);
+  background-size: 200% auto;
+  border: 1px solid rgba(201, 167, 78, 0.6);
+  border-radius: var(--radius-panel);
+  color: #08080f;
   font-family: var(--font-display);
   font-size: 1.1rem;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
-  letter-spacing: 0.05em;
-  transition: background 0.15s, transform 0.1s;
-  margin-top: 0.25rem;
+  letter-spacing: 0.1em;
+  transition: background-position 0.4s, box-shadow 0.2s, transform 0.1s;
+  box-shadow: 0 0 20px rgba(201, 167, 78, 0.2);
+  text-transform: uppercase;
+  margin-top: 0.5rem;
 }
 
 .startBtn:hover {
-  background: var(--color-gold-bright);
+  background-position: right center;
+  box-shadow: 0 0 32px rgba(201, 167, 78, 0.35);
 }
 
 .startBtn:active {

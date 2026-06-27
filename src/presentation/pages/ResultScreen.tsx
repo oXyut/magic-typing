@@ -1,5 +1,5 @@
 import styles from './ResultScreen.module.css'
-import type { FinalStats, GameConfig } from '../../domain/card'
+import type { FinalStats, GameConfig, RarityValue } from '../../domain/card'
 
 interface Props {
   stats: FinalStats
@@ -18,21 +18,43 @@ const FORMAT_LABELS: Record<string, string> = {
   pauper: 'パウパー',
 }
 
-const RARITY_LABELS: Record<string, string> = {
-  all: 'すべてのレア度',
-  common: 'コモン',
+const RARITY_LABELS: Record<RarityValue, string> = {
+  common:   'コモン',
   uncommon: 'アンコモン',
-  rare: 'レア',
-  mythic: '神話レア',
+  rare:     'レア',
+  mythic:   '神話レア',
+}
+
+function getRarityLabel(rarities: RarityValue[]): string {
+  if (rarities.length === 0) return 'すべてのレア度'
+  return rarities.map(r => RARITY_LABELS[r]).join(' + ')
+}
+
+function getWpmGrade(wpm: number): { grade: string; color: string } {
+  if (wpm >= 120) return { grade: 'S', color: '#e87c3e' }
+  if (wpm >= 80)  return { grade: 'A', color: '#c9a74e' }
+  if (wpm >= 50)  return { grade: 'B', color: '#7eb5d6' }
+  if (wpm >= 30)  return { grade: 'C', color: '#4ade80' }
+  return { grade: 'D', color: '#9e9e9e' }
 }
 
 export function ResultScreen({ stats, config, onRestart, onRetry }: Props) {
   const { wpm, accuracy, completedCards } = stats
+  const { grade, color } = getWpmGrade(wpm)
 
   return (
     <div className={styles.page}>
       <div className={styles.container}>
-        <h1 className={styles.title}>結果</h1>
+        <div className={styles.titleBlock}>
+          <p className={styles.titleOrn}>◆ ◆ ◆</p>
+          <h1 className={styles.title}>結果</h1>
+        </div>
+
+        <div className={styles.gradeBlock}>
+          <span className={styles.grade} style={{ color }}>
+            {grade}
+          </span>
+        </div>
 
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
@@ -51,14 +73,14 @@ export function ResultScreen({ stats, config, onRestart, onRetry }: Props) {
 
         <div className={styles.configSummary}>
           <span>{config.durationMinutes}分</span>
-          <span>·</span>
+          <span className={styles.dot}>◆</span>
           <span>{config.mode === 'name' ? 'カード名' : 'テキスト'}</span>
-          <span>·</span>
+          <span className={styles.dot}>◆</span>
           <span>{config.lang === 'en' ? '英語' : '日本語'}</span>
-          <span>·</span>
+          <span className={styles.dot}>◆</span>
           <span>{FORMAT_LABELS[config.format]}</span>
-          <span>·</span>
-          <span>{RARITY_LABELS[config.rarity]}</span>
+          <span className={styles.dot}>◆</span>
+          <span>{getRarityLabel(config.rarities)}</span>
         </div>
 
         <div className={styles.buttons}>
