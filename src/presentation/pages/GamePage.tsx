@@ -43,7 +43,7 @@ export function GamePage() {
   )
   const target = currentCard?.typingTarget ?? ''
   const { typed, charStates, isComplete, inputRef, handleCompositionEnd, reset: resetTyping } =
-    useTyping(target, isPlaying)
+    useTyping(target, isPlaying, config.lang)
 
   const { remainingSeconds, isTimeUp, wpm, accuracy, completedCards, recordCardCompleted, reset: resetStats } =
     useStats(isPlaying, totalSeconds)
