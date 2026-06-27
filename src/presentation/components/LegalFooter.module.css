@@ -1,0 +1,24 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+.footer p {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-dim);
+  line-height: 1.5;
+}
+
+.footer a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer a:hover {
+  color: var(--color-gold);
+}

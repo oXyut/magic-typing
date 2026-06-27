@@ -3,6 +3,7 @@ import styles from './StartScreen.module.css'
 import type { GameConfig, GameMode, Format, RarityValue, Card } from '../../domain/card'
 import { parseDeckList } from '../../infrastructure/deckParser'
 import { fetchCardsByNames } from '../../infrastructure/scryfallApi'
+import { LegalFooter } from '../components/LegalFooter'
 
 interface Props {
   defaultConfig: GameConfig
@@ -349,6 +350,8 @@ export function StartScreen({ defaultConfig, onStart }: Props) {
           </button>
 
         </div>
+
+        <LegalFooter />
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 import styles from './ResultScreen.module.css'
 import type { FinalStats, GameConfig, RarityValue } from '../../domain/card'
+import { LegalFooter } from '../components/LegalFooter'
 
 interface Props {
   stats: FinalStats
@@ -93,6 +94,8 @@ export function ResultScreen({ stats, config, onRestart, onRetry }: Props) {
             設定を変更する
           </button>
         </div>
+
+        <LegalFooter />
       </div>
     </div>
   )
